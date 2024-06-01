@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    --tw-bg-opacity: 1;
+    background-color: rgb(247, 255, 255);
+}
+
+h1 {
+    @media screen and (max-width:360px) {
+        font-size: 13px;
+    }
+}
+
+textarea::-webkit-scrollbar {
+    width: 4px;
+}
+
+textarea{
+    border: 1px solid rgb(21, 223, 213);
+}
+
