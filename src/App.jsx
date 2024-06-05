@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Navbar from './components/Navbar'
 import { FaEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
@@ -9,6 +9,7 @@ function App() {
   const [todo, setTodo] = useState("")
   const [todos, setTodos] = useState([])
   const [showFinished, setShowFinished] = useState(false)
+  const editTodoId = useRef("")
 
   useEffect(() => {
     if (localStorage.getItem("todos")) {
@@ -20,7 +21,7 @@ function App() {
     localStorage.setItem("todos", JSON.stringify(todos))
   }, [todos])
 
-  const handleSave = () => {
+  const handleAdd = () => {
     for (const item of todos) {
       if (todo == item.todo) {
         setTodo("")
@@ -28,18 +29,38 @@ function App() {
       }
     }
 
-    let id = uuidv4()
-    setTodos([...todos, { id: id, todo, isCompleted: false }])
+    setTodos([{ id: uuidv4(), todo, isCompleted: false }, ...todos])
+    setTodo("")
+  }
+
+  const handleUpdate = () => {
+    for (const item of todos) {
+      if (todo == item.todo) {
+        setTodo("")
+        return;
+      }
+    }
+
+    let index = todos.findIndex(item => {
+      return item.id === editTodoId.current
+    })
+    let newTodos = [...todos]
+    newTodos[index].todo = todo
+    setTodos(newTodos)
+
+    editTodoId.current = ""
+    document.querySelector("#add").style = "display: inline";
+    document.querySelector("#update").style = "display: node";
+
     setTodo("")
   }
 
   const handleEdit = (e, id) => {
     let t = todos.filter(item => item.id == id)
     setTodo(t[0].todo)
-    let newTodos = todos.filter(item => {
-      return item.id !== id
-    })
-    setTodos(newTodos)
+    editTodoId.current = id
+    document.querySelector("#add").style = "display: none";
+    document.querySelector("#update").style = "display: inline";
   }
 
   const handleDelete = (e, id) => {
@@ -78,7 +99,8 @@ function App() {
           </div>
           <div className='mb-5 flex flex-col items-center gap-y-2'>
             <textarea onChange={handleChange} className='pt-1 px-3 outline-none sm:w-11/12 w-full h-28 resize-none' value={todo}></textarea>
-            <button onClick={handleSave} disabled={todo.length <= 3} className='disabled:bg-cyan-500 rounded-full border text-white bg-cyan-600 px-2 font-semibold text-sm py-1 w-36'>Save</button>
+            <button onClick={handleAdd} disabled={todo.length <= 3} id='add' className='disabled:bg-cyan-500 rounded-full border text-white bg-cyan-600 px-2 font-semibold text-sm py-1 w-36'>Add</button>
+            <button onClick={handleUpdate} disabled={todo.length <= 3} id='update' className='disabled:bg-cyan-500 rounded-full border text-white bg-cyan-600 px-2 font-semibold text-sm py-1 w-36 hidden'>Update</button>
           </div>
 
           <div className='flex items-center gap-2 mb-4'>
@@ -108,7 +130,6 @@ function App() {
                 </div>
               </div>
             })}
-
           </div>
         </div>
       </div>
