@@ -25,7 +25,7 @@ function App() {
     for (const item of todos) {
       if (todo == item.todo) {
         setTodo("")
-        return;
+        return
       }
     }
 
